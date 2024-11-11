@@ -1,4 +1,4 @@
-import { databaseController } from "../controllers/databaseController.js";
+import { databaseController } from "../model/databaseModel.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -21,6 +21,9 @@ class CommonFunction {
     }
     if (!password && !process.env.APP_DBPASSWORD) {
       throw new Error("Database password is missing.");
+    }
+    if (!databaseName && !process.env.APP_DBNAME) {
+        throw new Error("Database Name is missing.");
     }
 
     const dbInstance = new databaseController(
