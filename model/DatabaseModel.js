@@ -1,6 +1,6 @@
 import mysql from "mysql";
 
-class databaseController {
+class DatabaseModel {
   constructor(host, user, password, dbName) {
     this.host = host;
     this.user = user;
@@ -48,4 +48,4 @@ class databaseController {
   }
 }
 
-export { databaseController };
+export default DatabaseModel;

@@ -1,12 +1,11 @@
-import { databaseController } from "../model/databaseModel.js";
+import DatabaseModel from "../model/DatabaseModel.js";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
 class CommonFunction {
-  constructor() {}
-
-  connectionCredentials(
+  static connectionCredentials(
     host = null,
     username = null,
     password = null,
@@ -23,10 +22,10 @@ class CommonFunction {
       throw new Error("Database password is missing.");
     }
     if (!databaseName && !process.env.APP_DBNAME) {
-        throw new Error("Database Name is missing.");
+      throw new Error("Database Name is missing.");
     }
 
-    const dbInstance = new databaseController(
+    const dbInstance = new DatabaseModel(
       host || process.env.APP_DBHOST,
       username || process.env.APP_DBUSERNAME,
       password || process.env.APP_DBPASSWORD,
@@ -35,6 +34,19 @@ class CommonFunction {
 
     return dbInstance;
   }
+
+  static verifyAuth(req, res, next) {
+    const token = req.header("auth-token");
+    if (!token) return res.status(400).send("Access Denied");
+
+    try {
+      const verified = jwt.verify(token, process.env.APP_TOKEN_SECRET);
+      req.user = verified;
+      next();
+    } catch (error) {
+      res.status(400).send("Invalid Token");
+    }
+  }
 }
 
-export { CommonFunction };
+export default CommonFunction;
