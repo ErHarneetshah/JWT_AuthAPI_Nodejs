@@ -1,6 +1,6 @@
 import mysql from "mysql";
 
-class UsersModel {
+class UsersModelClass {
   //* Checks whether an email already exists or not
   static checkEmail(con, email) {
     return new Promise((resolve, reject) => {
@@ -30,8 +30,8 @@ class UsersModel {
 
   static registerNewUser(con, data) {
     return new Promise((resolve, reject) => {
-      con.query(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
-        [data.name, data.email, data.password], (err, result) => {
+      con.query(`INSERT INTO users (name, email, password, mobile_no) VALUES (?, ?, ?, ?)`,
+        [data.name, data.email, data.password, data.mobile_no], (err, result) => {
         if (err) {
           return reject(err);
         }
@@ -39,10 +39,11 @@ class UsersModel {
         return resolve({
           status: true,
           message: `New User Registered Successfully`,
+          data: result.insertId
         });
       });
     });
   }
 }
 
-export default UsersModel;
+export default UsersModelClass;

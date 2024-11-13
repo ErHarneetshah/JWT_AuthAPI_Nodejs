@@ -1,13 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import CommonFunction from "../utils/comman.js";
+import CommonFunctionClass from "../utils/comman.js";
 
 dotenv.config();
 
 const router = express.Router();
+const commonFunctions = new CommonFunctionClass();
 
-router.get("/", CommonFunction.verifyAuth, (req, res) => {
+router.get("/", commonFunctions.verifyAuth, (req, res) => {
   res.send(req.user);
 });
 

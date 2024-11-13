@@ -1,6 +1,6 @@
 import mysql from "mysql";
 
-class DatabaseModel {
+class DatabaseModelClass {
   constructor(host, user, password, dbName) {
     this.host = host;
     this.user = user;
@@ -24,7 +24,7 @@ class DatabaseModel {
           console.error("Connection error:", err);
           return reject(err);
         } else {
-          console.log("Connection successful With Database!");
+          console.log("Connection With Database!");
           return resolve(con);
         }
       });
@@ -33,8 +33,9 @@ class DatabaseModel {
 
   createTable(con, tableName, attributes) {
     return new Promise((resolve, reject) => {
-      con.query(`CREATE TABLE ${tableName} (${attributes})`, (err, result) => {
+      con.query(`CREATE TABLE IF NOT EXISTS ${tableName} (${attributes})`, (err, result) => {
         if (err) {
+          console.error(`Error creating table ${tableName}: err`);
           return reject(err);
         }
 
@@ -48,4 +49,4 @@ class DatabaseModel {
   }
 }
 
-export default DatabaseModel;
+export default DatabaseModelClass;

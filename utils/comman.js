@@ -1,11 +1,12 @@
-import DatabaseModel from "../model/DatabaseModel.js";
+import DatabaseModelClass from "../model/DatabaseModel.js";
+import accessTokenModel from "../model/accessTokenModel.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-class CommonFunction {
-  static connectionCredentials(
+class CommonFunctionClass {
+  connectionCredentials(
     host = null,
     username = null,
     password = null,
@@ -25,7 +26,7 @@ class CommonFunction {
       throw new Error("Database Name is missing.");
     }
 
-    const dbInstance = new DatabaseModel(
+    const dbInstance = new DatabaseModelClass(
       host || process.env.APP_DBHOST,
       username || process.env.APP_DBUSERNAME,
       password || process.env.APP_DBPASSWORD,
@@ -35,18 +36,29 @@ class CommonFunction {
     return dbInstance;
   }
 
-  static verifyAuth(req, res, next) {
+  async verifyAuth(req, res, next) {
     const token = req.header("auth-token");
     if (!token) return res.status(400).send("Access Denied");
 
     try {
+      const dbInstance = new DatabaseModelClass(
+        process.env.APP_DBHOST,
+        process.env.APP_DBUSERNAME,
+        process.env.APP_DBPASSWORD,
+        process.env.APP_DBNAME
+      );
+      const establishConnection = await dbInstance.createConnection();
+      const tokenExists = await accessTokenModel.checkToken(establishConnection, token);
+      
+      if(!tokenExists.status) return res.status(400).send(tokenExists.message); 
       const verified = jwt.verify(token, process.env.APP_TOKEN_SECRET);
       req.user = verified;
       next();
     } catch (error) {
+      console.log(error);
       res.status(400).send("Invalid Token");
     }
   }
 }
 
-export default CommonFunction;
+export default CommonFunctionClass;
